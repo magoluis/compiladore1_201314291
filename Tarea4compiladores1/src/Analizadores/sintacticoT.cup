@@ -54,17 +54,18 @@ terminal inicio,fin,usuarioi,usuariof,idi,idf,codigoi,codigof,creari,crearf,nomb
 terminal tipoT,codi,codf,propii,propif,imgi,imgf,cod,pro,nom,dir,tel,tip,productot;
 terminal cantidadi,cantidadf,marcai,marcaf,colori,colorf,tamanoi,tamanof,sucursali,sucursalf,productof,sucur;
 terminal cant,tiend,tiendaf,llavei,llavef,pcoma,apar,cpar,mas,menos,por,div,igual,coma;
-terminal rdecimal,rentero,tstring,tchar,id,idc;
+terminal String rdecimal,rentero,tstring,tchar,id,idc;
 
 
 
 //-------------------> Declaración de No Terminales
-non terminal INICIO;
-non terminal  CUERPO;
-non terminal LOGIN,BLOQUE,SENTENCIAS,SENTENCIA,ID,PASSWORD;
-non terminal REGISTRO,BLOQUER,SENTENCIASR,SENTENCIAR,IDR,NOMBRER,APELLIDOR,PASSWORDR,TELEFONOR,EMAILR,DIRECCIONR;
-non terminal REGISTROT,BLOQUET,SENTENCIAST,SENTENCIAT,CODIGOT,PROPIETARIOT,NOMBRET,DIRECCIONT,TELEFONOT,IMGT;
-non terminal MODIFICACIONA,BLOQUEA,SENTENCIASA,SENTENCIAA,TIPOA,CODIGOA,PROPIETARIOA,NOMBREA,DIRECCIONA,TELEFONOA;
+non terminal Nodo INICIO;
+non terminal Nodo CUERPO,OPCIONES;
+non terminal Nodo LOGIN,BLOQUE,SENTENCIAS,SENTENCIA,ID,PASSWORD;
+non terminal Nodo REGISTRO,BLOQUER,SENTENCIASR,SENTENCIAR,IDR,NOMBRER,APELLIDOR,PASSWORDR,TELEFONOR,EMAILR,DIRECCIONR;
+non terminal Nodo REGISTROT,BLOQUET,SENTENCIAST,SENTENCIAT,CODIGOT,PROPIETARIOT,NOMBRET,DIRECCIONT,TELEFONOT,IMGT;
+non terminal Nodo MODIFICACIONA,BLOQUEA,SENTENCIASA,SENTENCIAA,TIPOA,CODIGOA,PROPIETARIOA,NOMBREA,DIRECCIONA,TELEFONOA,BLOQUEA1;
+non terminal Nodo ELIMINAR,BLOQUEE,BLOQUEE1,SENTENCIASE,SENTENCIAE,CODIGOE,PROPIETARIOE,TIPOE;
  
 
 
@@ -81,9 +82,9 @@ start with INICIO;
 /*----------------------------------------------------------------------------
 ----------------------------------------- Area de Gramatica
 ----------------------------------------------------------------------------*/
-INICIO::= CUERPO
+INICIO::= CUERPO:raiz
         {:
-           // parser.raiz=raiz;
+           parser.raiz=raiz;
         :}
     | error INICIO
     | ;
@@ -91,11 +92,34 @@ INICIO::= CUERPO
 
 ////----------------login --------
 
-CUERPO::=LOGIN
-    |REGISTRO
-    |REGISTROT
-    |MODIFICACIONA;
+CUERPO::=CUERPO:lista OPCIONES:sentencia
+{:
+ lista.hijos.add(sentencia);
+            RESULT = lista;
+:}
+    |OPCIONES:sentencia
+{:
+            Nodo lista = new Nodo("Opciones", sentenciaright, sentencialeft);
+            lista.hijos.add(sentencia);
+            RESULT = lista;
+:};
 
+OPCIONES::=LOGIN:a
+{:
+RESULT=a;
+:}
+    |REGISTRO:a
+{:
+RESULT=a;
+:}
+    |REGISTROT:a
+{:
+RESULT=a;
+:}
+    |MODIFICACIONA:a
+{:
+RESULT=a;
+:};
 
 LOGIN::= inicio BLOQUE fin;
 
@@ -175,33 +199,151 @@ IMGT::=imgi tstring imgf;
 
 ////------modificacion de atributos
 
-MODIFICACIONA::=inicio BLOQUEA fin;
+MODIFICACIONA::=inicio:a BLOQUEA:b fin
+{:
+Nodo cuerpo = new Nodo("Modificacion", aright, aleft);
+cuerpo.hijos.add(b);
+RESULT = cuerpo;
 
-BLOQUEA::= llavei tipoT SENTENCIASA llavef;
+:};
 
-SENTENCIASA::=SENTENCIASA coma SENTENCIAA
-    |SENTENCIAA;
+BLOQUEA::=BLOQUEA:a BLOQUEA1:b
+{:
+ a.hijos.add(b);
+ RESULT = a;
 
-SENTENCIAAA::=TIPOA
-    |CODIGOA
-    |PROPIETARIOA
-    |NOMBREA
-    |DIRECCIONA
-    |TELEFONOA;
+:}
+    |BLOQUEA1:a
+{:
+Nodo lista = new Nodo("Bloque", aright, aleft);
+            lista.hijos.add(a);
+            RESULT = lista;
+:};
 
-TIPOA::=tip igual tstring;
-
-CODIGOA::=cod igual rentero;
-
-PROPIETARIOA::=pro igual rentero;
-
-NOMBREA::=nom igual tstring;
-
-DIRECCIONA::=dir igual tstring;
-
-TELEFONOA::=tel igual rentero;
+BLOQUEA1::= llavei tipoT:a SENTENCIASA:b llavef
+{:
+Nodo cuerpo = new Nodo("Tienda", aright, aleft);
+cuerpo.hijos.add(b);
+RESULT = cuerpo;
+:};
 
 
+SENTENCIASA::=SENTENCIASA:a coma SENTENCIAA:b
+{:
+ a.hijos.add(b);
+ RESULT = a;
+
+:}
+    |SENTENCIAA:a
+{:
+Nodo lista = new Nodo("Bloque", aright, aleft);
+lista.hijos.add(a);
+RESULT = lista;
+
+:};
+
+SENTENCIAA::=TIPOA:a
+{:
+RESULT=a;
+:}
+    |CODIGOA:a
+{:
+RESULT=a;
+
+:}
+    |PROPIETARIOA:a{:
+RESULT=a;
+
+:}
+    |NOMBREA:a{:
+
+RESULT=a;
+
+:}
+    |DIRECCIONA:a{:
+RESULT=a;
+
+:}
+    |TELEFONOA:a
+{:
+RESULT=a;
+:};
+
+TIPOA::=tip igual tstring:a
+{:
+ Nodo padre = new Nodo("Tipo", aleft, aright);
+            Nodo hijo_1 = new Nodo(a.replaceAll("\"","").toString(), aleft, aright);
+            padre.hijos.add(hijo_1);
+            RESULT = padre;
+:};
+
+CODIGOA::=cod igual rentero:a
+{:
+  Nodo padre = new Nodo("Codigo", aleft, aright);
+            Nodo hijo_1 = new Nodo(a.toString(), aleft, aright);
+            padre.hijos.add(hijo_1);
+            RESULT = padre;
+
+:};
+
+PROPIETARIOA::=pro igual rentero:a
+{:
+ Nodo padre = new Nodo("propietario", aleft, aright);
+            Nodo hijo_1 = new Nodo(a.toString(), aleft, aright);
+            padre.hijos.add(hijo_1);
+            RESULT = padre;
+
+:};
+
+NOMBREA::=nom igual tstring:a{:
+Nodo padre = new Nodo("Nombre", aleft, aright);
+            Nodo hijo_1 = new Nodo(a.replaceAll("\"","").toString(), aleft, aright);
+            padre.hijos.add(hijo_1);
+            RESULT = padre;
+:};
+
+DIRECCIONA::=dir igual tstring:a
+{:
+
+Nodo padre = new Nodo("Direccion", aleft, aright);
+            Nodo hijo_1 = new Nodo(a.replaceAll("\"","").toString(), aleft, aright);
+            padre.hijos.add(hijo_1);
+            RESULT = padre;
+
+:};
+
+TELEFONOA::=tel igual rentero:a
+{:
+
+Nodo padre = new Nodo("Telefono", aleft, aright);
+            Nodo hijo_1 = new Nodo(a.toString(), aleft, aright);
+            padre.hijos.add(hijo_1);
+            RESULT = padre;
+:};
+
+///----------------ELIMINAR TIENDA-----------
+
+/*
+ELIMINAR::=inicio:a BLOQUEE:b fin{:
+ Nodo cuerpo = new Nodo("Eliminar", aright, aleft);
+            cuerpo.hijos.add(b);
+            RESULT = cuerpo;
+
+:};
+
+BLOQUEE::=BLOQUEE:a BLOQUEE1:b{:
+a.hijos.add(b);
+            RESULT = a;
+:}
+    |BLOQUEE1:a{:
+ Nodo lista = new Nodo("Bloque",aright,aleft);
+            lista.hijos.add(a);
+            RESULT = lista;
+:};
+
+BLOQUEE1::=llavei tipoT SENTENCIASA llavef;
+
+*/
 
 
 

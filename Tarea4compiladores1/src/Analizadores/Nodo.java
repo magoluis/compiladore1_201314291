@@ -12,27 +12,30 @@ import java.util.ArrayList;
  * @author User
  */
 public class Nodo {
-    public String valor;
-    public int id,linea,columna;
+   public String valor;    
+    public int id, linea, columna;
     public ArrayList<Nodo> hijos;
-     
-    public Nodo(){
-        
+    
+    public Nodo()
+    {        
     }
     
-    public Nodo(String val){
-        this.valor=val;
+    public Nodo(String val)
+    {
+        this.valor = val;
         this.id=0;
         this.linea=0;
         this.columna=0;
-        this.hijos=new ArrayList<Nodo>();
+        this.hijos = new ArrayList<Nodo>();
     }
     
-    public Nodo(String val,int linea,int columna){
-        this.valor=val;
+    public Nodo(String val, int lin, int col)
+    {
+        this.valor = val;
         this.id=0;
-        this.linea=linea;
-        this.columna=columna;
+        this.linea=lin;
+        this.columna=col;
+        this.hijos = new ArrayList<Nodo>();
     }
 
 }

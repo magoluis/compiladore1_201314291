@@ -5,12 +5,19 @@
  */
 package Formulario;
 
+import Acciones.Compilador;
+import Acciones.Lectura;
 import Analizadores.LexicoT;
 import Analizadores.SintacticoT;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.StringReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -24,6 +31,10 @@ public class ventana extends javax.swing.JFrame {
     public ventana() {
         initComponents();
     }
+    
+    private String path;
+    
+    Compilador compi=new Compilador();
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -75,12 +86,27 @@ public class ventana extends javax.swing.JFrame {
         jMenu1.setText("ARCHIVO");
 
         jMenuItem1.setText("Abrir");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
         jMenu1.add(jMenuItem1);
 
         jMenuItem2.setText("Guardar como");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
         jMenu1.add(jMenuItem2);
 
         jMenuItem3.setText("Salir");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
         jMenu1.add(jMenuItem3);
 
         jMenuBar1.add(jMenu1);
@@ -124,7 +150,7 @@ public class ventana extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
-        try {
+      /*  try {
             LexicoT lexic=new LexicoT(new StringReader(txtentrada.getText()));
             SintacticoT sin=new SintacticoT(lexic);
             sin.parse();
@@ -133,11 +159,63 @@ public class ventana extends javax.swing.JFrame {
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
-      
+      */
+        compi.Analizar(txtentrada.getText());
       
       
       
     }//GEN-LAST:event_jMenuItem4ActionPerformed
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+       JFileChooser selector=new JFileChooser();
+		   selector.setDialogTitle("Abrir");
+		   FileNameExtensionFilter filtro=new FileNameExtensionFilter("*.usac","usac");
+	           selector.setFileFilter(filtro);
+	           int resultado=selector.showOpenDialog(this);
+	           if(resultado==JFileChooser.APPROVE_OPTION)
+	            {
+	    	     path= selector.getSelectedFile().getAbsolutePath();
+                     System.out.println(path);
+	    	  
+	            }
+                   Lectura lectura = new Lectura();
+                   lectura.leerTxt(path);
+                   txtentrada.setText(lectura.getTexto());
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        try{
+        JFileChooser selector=new JFileChooser();
+        selector.setMultiSelectionEnabled(true);
+        selector.addChoosableFileFilter(new FileNameExtensionFilter("todos los archivos","usac"));
+        int r=selector.showSaveDialog(null);
+        if(r==JFileChooser.APPROVE_OPTION){
+            File archivos=selector.getSelectedFile();
+            String todo2 = archivos.getAbsolutePath();
+            
+            FileOutputStream  os=new  FileOutputStream (archivos);
+            DataOutputStream ds=new DataOutputStream(os);
+            os.write((txtentrada.getText()).getBytes());
+            os.close();
+            if(!(todo2.endsWith(".usac"))){
+                File temp=new File(todo2+".usac");
+                archivos.renameTo(temp);
+                System.out.println(todo2+".usac");
+            }
+            
+            
+            
+            
+            
+        }
+    }catch(Exception e){
+        
+    }
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+       System.exit(0);
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     /**
      * @param args the command line arguments

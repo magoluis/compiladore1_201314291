@@ -1,0 +1,10 @@
+$request$
+$tienda tipo= "crear"$
+$codigo$ 8 $codigo-$
+$propietario$ 5 $propietario-$
+$nombre$ "Librería Tatty" $nombre-$
+$direccion$ "Calle Real" $direccion-$
+$telefono$ 12345 $telefono-$
+$img$ "path de la imagen" $img-$
+$tienda-$
+$request-$

@@ -1,0 +1,10 @@
+$request$
+$tienda tipo="modificación", 
+codigo=100,
+propietario=2,
+nombre= "librería Tatiana" ,
+direccion="Guatemala",
+telefono=12345678 -$
+$tienda codigo=100, propietario=2, tipo="modificación", direccion="Puerta Parada"-$
+$tienda codigo=100, propietario=2, telefono=2222, tipo="modificación"-$ 
+$request-$
