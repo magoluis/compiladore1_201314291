@@ -1,0 +1,217 @@
+/*----------------------------------------------------------------------------
+----------------------------------------- Area de Codigo de Usuario
+----------------------------------------------------------------------------*/
+
+//-------------------> Importaciones, Paquetes
+package Analizadores;
+
+import java_cup.runtime.Symbol;
+import java.util.ArrayList;
+
+
+//-------------------> Codigo para el parser, variables, metodos
+parser code
+{:      
+    public Nodo raiz;
+
+    //-------------------> Metodo al que se llama automaticamente ante algun error sintactico.
+    public void syntax_error(Symbol s)
+    {        
+        System.out.println("Error Sintactico Recuperado /////// lexema: " +s.value+ " Fila: " +s.right+ " Columna: "+s.left);       
+    }
+
+
+    //-------------------> Metodo al que se llama en el momento en que ya no es posible una recuperacion de errores.
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception
+    {        
+        System.out.println("Error Sintactico Panico ////// Lexema: " +s.value+" Fila: "+s.right+ " Columna: "+s.left);        
+    }
+
+
+    public void semantic(Symbol cur_token, String n) 
+    {
+        System.out.println("error semantico ");
+    }
+
+
+    public void semantic(String msg, Object obj) {}
+
+:}
+
+
+//-------------------> Codigo para las acciones gramaticales
+action code
+{:
+:}  
+
+
+/*----------------------------------------------------------------------------
+----------------------------------------- Area de Declaraciones
+----------------------------------------------------------------------------*/
+
+//-------------------> Declaración de Terminales
+terminal inicio,fin,usuarioi,usuariof,idi,idf,codigoi,codigof,creari,crearf,nombrei,nombref,apellidoi,apellidof,telefonoi,telefonof,correoi,correof,direccioni,direccionf;
+terminal tipoT,codi,codf,propii,propif,imgi,imgf,cod,pro,nom,dir,tel,tip,productot;
+terminal cantidadi,cantidadf,marcai,marcaf,colori,colorf,tamanoi,tamanof,sucursali,sucursalf,productof,sucur;
+terminal cant,tiend,tiendaf,llavei,llavef,pcoma,apar,cpar,mas,menos,por,div,igual,coma;
+terminal rdecimal,rentero,tstring,tchar,id,idc;
+
+
+
+//-------------------> Declaración de No Terminales
+non terminal INICIO;
+non terminal  CUERPO;
+non terminal LOGIN,BLOQUE,SENTENCIAS,SENTENCIA,ID,PASSWORD;
+non terminal REGISTRO,BLOQUER,SENTENCIASR,SENTENCIAR,IDR,NOMBRER,APELLIDOR,PASSWORDR,TELEFONOR,EMAILR,DIRECCIONR;
+non terminal REGISTROT,BLOQUET,SENTENCIAST,SENTENCIAT,CODIGOT,PROPIETARIOT,NOMBRET,DIRECCIONT,TELEFONOT,IMGT;
+non terminal MODIFICACIONA,BLOQUEA,SENTENCIASA,SENTENCIAA,TIPOA,CODIGOA,PROPIETARIOA,NOMBREA,DIRECCIONA,TELEFONOA;
+ 
+
+
+//-------------------> Precedencia y Asociatividad
+//precedence left mas, menos;
+//precedence left por,div;
+
+
+//-------------------> No Terminal inicial
+start with INICIO;
+
+
+
+/*----------------------------------------------------------------------------
+----------------------------------------- Area de Gramatica
+----------------------------------------------------------------------------*/
+INICIO::= CUERPO
+        {:
+           // parser.raiz=raiz;
+        :}
+    | error INICIO
+    | ;
+
+
+////----------------login --------
+
+CUERPO::=LOGIN
+    |REGISTRO
+    |REGISTROT
+    |MODIFICACIONA;
+
+
+LOGIN::= inicio BLOQUE fin;
+
+BLOQUE::= usuarioi SENTENCIAS usuariof;
+
+SENTENCIAS::=SENTENCIAS SENTENCIA
+    |SENTENCIA;
+
+SENTENCIA::=ID
+    |PASSWORD;
+
+
+ID::=idi rentero idf;
+
+PASSWORD::=codigoi id codigof;
+
+
+//////---------------Registro usuario-------------
+
+REGISTRO::= inicio BLOQUER fin;
+
+BLOQUER::= creari SENTENCIASR crearf;
+
+SENTENCIASR::=SENTENCIASR SENTENCIAR
+    |SENTENCIAR;
+
+SENTENCIAR::=IDR
+    |NOMBRER
+    |APELLIDOR
+    |PASSWORDR
+    |TELEFONOR
+    |EMAILR
+    |DIRECCIONR;
+
+IDR::=idi rentero idf;
+
+NOMBRER::=nombrei tstring nombref;
+
+APELLIDOR::=apellidoi tstring apellidof;
+
+PASSWORDR::=codigoi id codigof;
+
+TELEFONOR::=telefonoi rentero telefonof;
+
+EMAILR::= correoi idc correof;
+
+DIRECCIONR::=direccioni tstring direccionf;
+
+//////---------registrotienda----------------
+
+REGISTROT::= inicio BLOQUET fin;
+
+BLOQUET::=llavei tipoT tip igual tstring llavei SENTENCIAST tiendaf;
+
+SENTENCIAST::=SENTENCIAST SENTENCIAT
+    |SENTENCIAT;
+
+SENTENCIAT::=CODIGOT
+    |PROPIETARIOT
+    |NOMBRET
+    |DIRECCIONT
+    |TELEFONOT
+    |IMGT;
+
+
+CODIGOT::=codi rentero codf;
+
+PROPIETARIOT::=propii rentero propif;
+
+NOMBRET::=nombrei tstring nombref;
+
+DIRECCIONT::=direccioni tstring direccionf;
+
+TELEFONOT::=telefonoi rentero telefonof;
+
+IMGT::=imgi tstring imgf;
+
+////------modificacion de atributos
+
+MODIFICACIONA::=inicio BLOQUEA fin;
+
+BLOQUEA::= llavei tipoT SENTENCIASA llavef;
+
+SENTENCIASA::=SENTENCIASA coma SENTENCIAA
+    |SENTENCIAA;
+
+SENTENCIAAA::=TIPOA
+    |CODIGOA
+    |PROPIETARIOA
+    |NOMBREA
+    |DIRECCIONA
+    |TELEFONOA;
+
+TIPOA::=tip igual tstring;
+
+CODIGOA::=cod igual rentero;
+
+PROPIETARIOA::=pro igual rentero;
+
+NOMBREA::=nom igual tstring;
+
+DIRECCIONA::=dir igual tstring;
+
+TELEFONOA::=tel igual rentero;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
